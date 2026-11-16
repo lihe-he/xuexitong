@@ -92,7 +92,7 @@ courseType=1&courseFolderId=0&courseFolderSize=0
 返回 HTML 片段，用 `course_(\d+)_(\d+)` 抽出 `(courseId, classId)`。
 备用入口：`https://mooc1-1.chaoxing.com/visit/courselistdata`。
 
-> 注意：很多实现漏了 `Referer`，会导致返回空列表。这是 ① 系列项目的老 bug。
+> 注意：这个接口对 `Referer` 敏感，漏了会返回空列表。
 
 ---
 

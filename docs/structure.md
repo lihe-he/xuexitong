@@ -40,7 +40,7 @@ cxsign/
 ├── docs/
 │   ├── protocol.md             ★ 接口协议速查（含实测记录）
 │   ├── design.md               架构与设计取舍
-│   ├── experience.md           8 个开源项目拆解
+│   ├── experience.md           参考项目与借鉴
 │   ├── delegation.md           代签的授权模型与隔离
 │   └── roadmap.md              路线图 + 明确不做
 ├── .github/

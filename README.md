@@ -21,25 +21,24 @@ Web UI 和 CLI 双入口，Docker 一行起。
 
 ---
 
-## 为什么又造一个轮子
+## 设计取舍
 
-现有项目 [cxOrz/chaoxing-signin](https://github.com/cxOrz/chaoxing-signin) 已经做得很好，
-但它 2023 年后停更、技术栈是 Node+React+Koa 三件套、二维码仍要人工。
+这类工具的路线基本有两条：**驱动界面**（浏览器 / WebView / 真机自动化）和**复现协议**（直接发 HTTP）。
+本项目选后者，因为签到本身只是一次表单提交，不需要渲染任何页面。
 
-本项目重新写了一遍，取舍是：
-
-| 维度 | 本项目 |
+| 维度 | 本项目的选择 |
 |---|---|
-| 语言 | Python 3.11+，无前端构建，单文件 HTML |
-| 部署 | `docker compose up -d`，32MB 镜像 |
-| 协议 | 所有 URL 集中在 [`endpoints.py`](cxsign/endpoints.py)，带 `[稳]/[验]/[推]` 可信度标注 |
+| 语言 | Python 3.11+，无前端构建步骤 |
+| 部署 | `docker compose up -d`，镜像约 32MB |
+| 协议 | 所有 URL 集中在 [`endpoints.py`](cxsign/endpoints.py)，带 `[稳]/[验]/[推]/[✗]` 可信度标注 |
 | 类型判定 | `otherId` + `ifphoto` + `activeSort` 三重兜底，14 条单测 |
 | 反作弊链 | `preSign → analysis → analysis2` 独立模块，可开关 |
 | 去重 | 内存 set + SQLite 双层，重启不重复签到 |
-| 身份隔离 | 一账号一份 `deviceCode` + UA + 出口 IP + 时间抖动，多账号不扎堆 |
-| 边界 | 不做伪造活动、不做人脸绕过 |
+| 身份隔离 | 一账号一份 `deviceCode` + UA + 出口 IP + 时间抖动 |
+| 边界 | 不做伪造活动、不做人脸绕过、不接打码平台 |
 
-详细拆解见 [docs/experience.md](docs/experience.md)（8 个开源项目逐个点评）。
+这个领域的早期探索者留下的实践记录，是我做设计时的主要参考，
+整理在 [docs/experience.md](docs/experience.md)。
 
 ---
 
@@ -254,7 +253,7 @@ python -m cxsign.tools catcher                   # 本地 cookie 接收器（带
 
 * 架构与设计取舍：[docs/design.md](docs/design.md)
 * 接口协议速查：[docs/protocol.md](docs/protocol.md)
-* 8 个项目拆解与经验：[docs/experience.md](docs/experience.md)
+* 参考项目与借鉴：[docs/experience.md](docs/experience.md)
 * 多账号 / 代签的授权与隔离：[docs/delegation.md](docs/delegation.md)
 * 目录结构与改动指引：[docs/structure.md](docs/structure.md)
 * 路线图：[docs/roadmap.md](docs/roadmap.md)
