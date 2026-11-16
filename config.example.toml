@@ -1,0 +1,67 @@
+# cxsign 配置文件示例
+# 用法：复制为 config.toml，按需修改。所有字段都可被同名环境变量覆盖（见 README）。
+
+# 数据目录（SQLite、日志）。默认 ./data
+data_dir = "data"
+
+# 请求
+timeout = 15
+min_interval = 0.4        # 同一账号两次请求的最小间隔（秒），别调太小
+retries = 3
+# proxy = "http://127.0.0.1:7890"
+
+# 监听
+poll_interval = 20        # 轮询 activelist 的间隔（秒），15~25 都合适
+activity_ttl = 150        # 活动开始超过这么多秒还没签上，就不再重试
+
+# 位置签到默认点位（必须是 **BD-09** 百度坐标）
+# 取法：https://api.map.baidu.com/lbsapi/getpoint/index.html 搜地点后复制经纬度
+default_lat = "-1"
+default_lon = "-1"
+default_address = ""
+location_jitter_m = 8.0   # 每次签到在点位周围随机抖动多少米，0 = 不抖
+
+# ------------------------------------------------ 身份隔离（多账号 / 代签必看）
+# 详见 docs/delegation.md。关掉后所有账号共用同一 UA 与出口 IP，风险自担。
+
+isolate_identity = true
+
+# 出口 IP 池，按 account_id 取模分配。池子大小 >= 账号数时才保证零重复。
+# 住宅代理比机房 IP 更像真人；只支持 httpx 的格式：http:// / socks5://
+proxy_pool = [
+  # "http://user:pass@127.0.0.1:7891",
+  # "socks5://127.0.0.1:7892",
+]
+
+# 行为抖动：发现签到后随机等一段时间再提交，模拟人类反应时间
+sign_delay_min = 3.0
+sign_delay_max = 25.0
+multi_account_spread = 4.0   # 同一个活动有多个账号要签时，相邻账号额外错开几秒
+
+# ---------------------------------------------------------- 吞吐与退避
+global_rate = 8.0            # 全进程总出口速率（次/秒），0 = 不限
+global_burst = 16            # 令牌桶容量
+scan_concurrency = 3         # 单账号并发扫课程数
+backoff_base = 30.0          # 被限流后首次退避秒数，之后翻倍
+backoff_max = 600.0          # 退避上限
+
+# ---------------------------------------------------------------- 推送
+# 支持 webhook / serverchan / pushplus / telegram，可同时开多个。
+# enabled = false 表示该通道不启用（省略时默认启用）。
+
+[notify.serverchan]
+enabled = false
+sendkey = "SCTxxxxxxxxxxxxxxxx"
+
+[notify.pushplus]
+enabled = false
+token = "xxxxxxxxxxxxxxxxxxxx"
+
+[notify.telegram]
+enabled = false
+bot_token = "123456:ABC-DEF"
+chat_id = "123456789"
+
+[notify.webhook]
+enabled = false
+url = "https://example.com/hook"

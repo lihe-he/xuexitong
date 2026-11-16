@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>cxsign · 学习通自动签到</title>
+<link rel="stylesheet" href="/static/app.css" />
+</head>
+<body>
+<header>
+  <h1>cxsign</h1>
+  <span class="tag">超星学习通自动签到</span>
+  <span style="flex:1"></span>
+  <span id="health" class="tag mono">…</span>
+</header>
+
+<main>
+  <section class="card">
+    <h2>添加账号 · 密码登录</h2>
+    <div class="row">
+      <input id="u" placeholder="手机号" autocomplete="username" />
+      <input id="p" type="password" placeholder="密码" autocomplete="current-password" />
+      <button class="primary" onclick="login()">登录</button>
+    </div>
+    <p class="dim" style="margin:10px 0 0;font-size:12px">密码经 Fernet 加密后落库，用于换 Cookie 与自动续期。</p>
+  </section>
+
+  <section class="card">
+    <h2>添加账号 · Cookie 托管</h2>
+    <div class="row" style="margin-bottom:8px">
+      <input id="iu" placeholder="对方手机号" />
+      <input id="iop" placeholder="代管人标识（可空）" />
+    </div>
+    <textarea id="ic" placeholder="粘贴 Cookie：_uid=...; fid=...; _d=...; vc3=...&#10;（也接受 JSON）"
+      style="width:100%;min-height:64px;background:#0d1117;border:1px solid var(--line);color:var(--fg);border-radius:6px;padding:8px 10px;font-family:ui-monospace,Consolas,monospace;font-size:12px;resize:vertical"></textarea>
+    <div class="row" style="margin-top:8px">
+      <button class="primary" onclick="importCookie()">导入</button>
+      <span class="dim" style="flex:1;font-size:12px">不保存密码；对方改密码即自动失效</span>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>监听</h2>
+    <div class="row" style="margin-bottom:10px">
+      <input id="interval" type="number" min="5" value="20" title="轮询间隔（秒）" />
+      <button class="primary" onclick="monitor('start')">启动</button>
+      <button onclick="monitor('stop')">停止</button>
+    </div>
+    <div class="mono dim" id="mstat">未启动</div>
+  </section>
+
+  <section class="card span2">
+    <h2>账号</h2>
+    <div id="accounts"><div class="empty">暂无账号</div></div>
+  </section>
+
+  <section class="card span2">
+    <h2>进行中的签到</h2>
+    <div id="acts"><div class="empty">点「扫描」拉一次</div></div>
+  </section>
+
+  <section class="card span2">
+    <h2>签到记录</h2>
+    <div id="logs"><div class="empty">暂无记录</div></div>
+  </section>
+</main>
+
+<div id="toast"></div>
+
+<script src="/static/app.js"></script>
+</body>
+</html>

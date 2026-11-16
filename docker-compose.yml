@@ -1,0 +1,17 @@
+services:
+  cxsign:
+    build: .
+    image: cxsign:latest
+    container_name: cxsign
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./data:/data
+      # 需要自定义配置时取消下面一行，并把 config.toml 放在同目录
+      # - ./config.toml:/app/config.toml:ro
+    environment:
+      TZ: Asia/Shanghai
+      CXSIGN_DATA: /data
+      CXSIGN_POLL: "20"
+    # 更省心的做法：容器只做前台，监听在 Web UI 里点「启动」

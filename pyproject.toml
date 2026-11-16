@@ -1,0 +1,66 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "cxsign"
+version = "0.2.1"
+description = "超星学习通自动签到：协议复现、多账号、监听、推送"
+readme = "README.md"
+requires-python = ">=3.11"
+license = { text = "MIT" }
+authors = [{ name = "cxsign contributors" }]
+keywords = ["chaoxing", "xuexitong", "signin", "checkin", "超星", "学习通", "签到"]
+classifiers = [
+  "Programming Language :: Python :: 3",
+  "License :: OSI Approved :: MIT License",
+  "Operating System :: OS Independent",
+]
+dependencies = [
+  "httpx>=0.27",
+  "cryptography>=42",
+  "pycryptodome>=3.20",
+  "fastapi>=0.110",
+  "uvicorn>=0.29",
+]
+
+[project.optional-dependencies]
+qr = ["opencv-python-headless>=4.9"]
+dev = ["pytest>=8", "ruff>=0.5"]
+
+[project.scripts]
+cxsign = "cxsign.cli:main"
+cxsign-server = "cxsign.server.cli:main"
+cxsign-tools = "cxsign.tools.__main__:main"
+
+[project.urls]
+Homepage = "https://github.com/yourname/cxsign"
+Documentation = "https://github.com/yourname/cxsign/tree/main/docs"
+
+[tool.setuptools.packages.find]
+include = ["cxsign*"]
+
+[tool.setuptools.package-data]
+"cxsign.server" = ["static/*"]
+
+[tool.ruff]
+line-length = 110
+target-version = "py311"
+exclude = ["data", ".venv"]
+
+[tool.ruff.lint]
+# 中文项目：不开 RUF001/002/003（全角标点告警），否则 800+ 条噪音
+select = ["E", "F", "W", "I", "UP", "B", "C4", "SIM"]
+ignore = [
+  "E501",   # 行长由 formatter 控制
+  "B008",   # FastAPI 的 Depends() 默认值写法
+  "SIM105", # 有时 try/except pass 比 contextlib.suppress 更好读
+]
+
+[tool.ruff.lint.isort]
+known-first-party = ["cxsign"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"
+filterwarnings = ["ignore::DeprecationWarning"]

@@ -1,0 +1,51 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.11", "3.12", "3.13"]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: pip
+
+      - name: 安装依赖
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e ".[dev]"
+
+      - name: Lint
+        run: ruff check .
+
+      - name: 测试
+        # 回放测试起本地 HTTP 服务，不需要真实账号，也不需要网络访问学习通
+        run: pytest tests -q
+
+  qr:
+    # 二维码解码是可选依赖，单独跑一遍确认装了之后测试也过
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - name: 安装含 QR 依赖
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e ".[dev,qr]"
+      - name: 测试（含二维码往返）
+        run: pytest tests -q -k "qr or qrcode or enc"
